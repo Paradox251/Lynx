@@ -51,125 +51,162 @@ int main() {
 
 #define ENABLE_ALIAS ON
 
-struct End {
-    template<typename FinalState>
-    End(FinalState& s) {
-        std::cout << "*********** END ***********\n";
-        std::apply([&](auto&&... op_tuples) {
-            ((std::apply([&](auto&&... args) {
-                ((std::cout << args << "\n"), ...);
-                std::cout << "------\n";
-            }, op_tuples)), ...);
-        }, s);
-        std::cout << "***************************\n\n";
-    }
+    struct End {
+        template<typename FinalState>
+        End(FinalState& s) {
+            // SEUL ELEMENT RUNTIME DU SYSTÈME COMPLET ;)
 
-    void end() {
-        std::cout << "Operator chain ended!\n";
-    }
-};
+            std::cout << "*********** END ***********\n";
 
-/********************************************/
+            std::apply([&](auto&&... op_tuples) {
 
-template<typename T>
-struct is_terminal : std::false_type {};
+                ((std::apply([&](auto&&... args) {
+                    std::cout << typeid(op_tuples).name() << "\n";
+                    ((std::cout << args << "\n"), ...);
+                    std::cout << "------\n";
+                    }, op_tuples)), ...);
+                }, s);
 
-template<>
-struct is_terminal<End> : std::true_type {};
+            std::cout << "***************************\n\n";
+        }
 
-/********************************************/
+        void end() {
+            std::cout << "Operator chain ended!\n";
+        }
 
-struct StatelessOperator;
+        void get() {
 
-template<typename CurrentState>
-struct StatefulOperator {
-public:
-    StatefulOperator() = default;
-    StatefulOperator(CurrentState s) : state_(std::move(s)) {}
+        }
+    };
 
-protected:
-    CurrentState state_;
-};
+    template<typename T>
+    struct is_terminal : std::false_type {};
 
-/********************************************/
+    template<>
+    struct is_terminal<End> : std::true_type {};
 
-template<typename Operator>
-struct MetaOperator;
+    /********************************************/
 
-template<
-    template<typename, typename> class Operator,
-    typename Next,
-    typename State
->
-struct MetaOperator<Operator<Next, State>> {
-    template<typename T1, typename T2>
-    using template_type = Operator<T1, T2>;
-    using next_type = Next;
-};
+    struct MetaOperator {}; //metaoperator?
 
-/********************************************/
+    /********************************************/
 
-template<
-    typename Next,
-    typename CurrentState
->
-struct FunctionOperator_:
-    StatefulOperator<CurrentState>,
-    MetaOperator<FunctionOperator_<Next, CurrentState>>
-{
-    template<typename... Args>
-    auto operator()(Args&&... args) {
-        auto t_ = std::make_tuple(std::forward<Args>(args)...);
+    struct StatelessOperator : MetaOperator {};
 
-        auto concat_state_args = std::tuple_cat(
-            this->state_,
-            std::make_tuple(t_)
-        );
+    /********************************************/
 
-        if constexpr (is_terminal<Next>::value)
-            return End{ concat_state_args };
-        else
-            return Next::template template_type<
-              typename Next::next_type,
-              decltype(concat_state_args)
-            > (std::move(concat_state_args));
-    }
-};
+    template<typename CurrentState>
+    struct StatefulOperator : MetaOperator {
+    public:
+        StatefulOperator() = default;
+        StatefulOperator(CurrentState s) : state_(std::move(s)) {}
 
-template<
-    typename Next,
-    typename CurrentState
->
-struct SubscriptOperator_:
-    StatefulOperator<CurrentState>,
-    MetaOperator<SubscriptOperator_<Next, CurrentState>>
-{
-    template<typename Arg>
-    auto operator[](Arg arg) {
-        auto t_ = std::make_tuple(std::move(arg));
+    protected:
+        CurrentState state_;
+    };
 
-        auto concat_state_args = std::tuple_cat(
-            this->state_,
-            std::make_tuple(t_)
-        );
+    /********************************************/
 
-        if constexpr (is_terminal<Next>::value)
-            return End{ concat_state_args };
-        else 
-            return Next::template template_type<
-                typename Next::next_type,
-                decltype(concat_state_args)
-            > (std::move(concat_state_args));
-    }
-};
+    template<typename Operator>
+    struct OperatorTraits : MetaOperator {};
+
+    template<
+        template<std::size_t, typename, typename> class Operator,
+        std::size_t Arity,
+        typename Next,
+        typename State
+    >
+    struct OperatorTraits<
+        Operator<Arity, Next, State>
+    > : MetaOperator
+    {
+        template<std::size_t T1, typename T2, typename T3>
+        using template_type = Operator<T1, T2, T3>;
+        using next_n = Arity;
+        using next_type = Next;
+    };
+
+    /********************************************/
+
+    template<
+        std::size_t Arity, // = 0; variadic supporte 0
+        typename Next,
+        typename CurrentState
+    >
+    struct FunctionOperator_:
+        StatefulOperator<CurrentState>,
+        OperatorTraits<FunctionOperator_<Arity, Next, CurrentState>>
+    {
+        template<
+            typename... Args,
+            std::size_t Args_arity = sizeof...(Args),
+
+            typename = std::enable_if_t<
+                Arity == 0 ||
+                Args_arity == Arity
+            >
+        >
+        auto operator()(Args&&... args) {
+            auto concat_state_args = std::tuple_cat(
+                this->state_,
+                std::make_tuple(
+                    std::make_tuple(std::forward<Args>(args)...)
+                )
+            );
+
+            if constexpr (is_terminal<Next>::value)
+                return End{ concat_state_args };
+            else {
+                return Next::template template_type<
+                    typename Next::next_type,
+                    decltype(concat_state_args)
+                > (std::move(concat_state_args));
+            }
+        }
+    };
+
+    /********************************************/
+
+//a terminer
+    template<
+        typename Next,
+        typename CurrentState
+    >
+    struct SubscriptOperator_:
+        StatefulOperator<CurrentState>,
+        MetaOperator<SubscriptOperator_<Next, CurrentState>>
+    {
+        template<typename Arg>
+        auto operator[](Arg arg) {
+            auto concat_state_args = std::tuple_cat(
+                this->state_,
+                std::make_tuple(
+                    std::make_tuple(std::move(arg))
+                )
+            );
+
+            if constexpr (is_terminal<Next>::value) {
+                return End{ concat_state_args };
+            }
+
+            else {
+                std::cout << "sub op!\n";
+
+                return Next::template template_type<
+                    typename Next::next_type,
+                    decltype(concat_state_args)
+                > (std::move(concat_state_args));
+            }
+        }
+    };
 
 #if ENABLE_ALIAS
     using DEFAULT_NEXT_TYPE = End;
     using DEFAULT_STATE_TYPE = std::tuple<>;
 
-    #define GENERATE_ALIAS(alias_name, backend_name) \
-        template<typename N=DEFAULT_NEXT_TYPE, typename S=DEFAULT_STATE_TYPE> \
-        using alias_name = backend_name<N,S>;
+#define GENERATE_ALIAS(alias_name, backend_name) \
+            template<typename N=DEFAULT_NEXT_TYPE, typename S=DEFAULT_STATE_TYPE> \
+            using alias_name = backend_name<N,S>;
 
     GENERATE_ALIAS(FunctionOperator, FunctionOperator_);
     GENERATE_ALIAS(SubscriptOperator, SubscriptOperator_);
