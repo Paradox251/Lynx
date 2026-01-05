@@ -225,6 +225,7 @@ struct SubscriptOperator_ :
 
 
 /********************************************/
+ // MACRO MACRO MACRO MACRO MACRO MACRO MACRO!!!!
 
 static constexpr std::size_t DEFAULT_ARITY_VALUE = 0;
 using DEFAULT_NEXT_TYPE = End;
