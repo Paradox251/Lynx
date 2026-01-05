@@ -49,7 +49,7 @@ int main() {
 #define OFF 0
 #define ON 1
 
-#define ENABLE_ALIAS ON
+#define ENABLE_ALIAS OFF
 
 struct End {
     template<typename FinalState>
@@ -156,27 +156,54 @@ struct FunctionOperator_:
 
         if constexpr (is_terminal<Next>::value)
             return End{ concat_state_args };
-        else {
+        else
             return Next::template template_type<
+                Next::arity,
                 typename Next::next_type,
                 decltype(concat_state_args)
             > (std::move(concat_state_args));
-        }
     }
 };
 
 /********************************************/
 
-//a terminer
 template<
+    std::size_t Arity,
     typename Next,
     typename CurrentState
 >
-struct SubscriptOperator_:
+struct SubscriptOperator_ :
     StatefulOperator<CurrentState>,
-    MetaOperator<SubscriptOperator_<Next, CurrentState>>
+    OperatorTraits<SubscriptOperator_<Arity, Next, CurrentState>>
 {
-    template<typename Arg>
+    template<
+        typename ...Args,
+        std::size_t Args_arity = sizeof...(Args),
+
+        typename = std::enable_if_t<
+        Arity == 0 ||
+        Args_arity == Arity
+        >
+    >
+    auto operator[](Args&&... arg) {
+        auto concat_state_args = std::tuple_cat(
+            this->state_,
+            std::make_tuple(
+                std::make_tuple(std::move(arg))
+            )
+        );
+
+        if constexpr (is_terminal<Next>::value)
+            return End{ concat_state_args };
+        else
+            return Next::template template_type<
+                Next::arity,
+                typename Next::next_type,
+                decltype(concat_state_args)
+            > (std::move(concat_state_args));
+    }
+
+    template<typename Arg> // pre-C++23
     auto operator[](Arg arg) {
         auto concat_state_args = std::tuple_cat(
             this->state_,
@@ -185,20 +212,55 @@ struct SubscriptOperator_:
             )
         );
 
-        if constexpr (is_terminal<Next>::value) {
+        if constexpr (is_terminal<Next>::value)
             return End{ concat_state_args };
-        }
-
-        else {
-            std::cout << "sub op!\n";
-
+        else
             return Next::template template_type<
+                Next::arity,
                 typename Next::next_type,
                 decltype(concat_state_args)
             > (std::move(concat_state_args));
-        }
     }
 };
+
+
+/********************************************/
+
+static constexpr std::size_t DEFAULT_ARITY_VALUE = 0;
+using DEFAULT_NEXT_TYPE = End;
+using DEFAULT_STATE_TYPE = std::tuple<>;
+
+/********************************************/
+
+template<
+    std::size_t Arity = DEFAULT_ARITY_VALUE,
+    typename Next = DEFAULT_NEXT_TYPE,
+    typename State = DEFAULT_STATE_TYPE
+>
+struct FunctionOperator_n : FunctionOperator_<Arity, Next, State> {};
+
+template<
+    typename Next = DEFAULT_NEXT_TYPE,
+    typename State = DEFAULT_STATE_TYPE
+>
+struct FunctionOperator : FunctionOperator_<DEFAULT_ARITY_VALUE, Next, State> {};
+
+/********************************************/
+
+template<
+    std::size_t Arity = DEFAULT_ARITY_VALUE,
+    typename Next = DEFAULT_NEXT_TYPE,
+    typename State = DEFAULT_STATE_TYPE
+>
+struct SubscriptOperator_n : SubscriptOperator_<Arity, Next, State> {};
+
+template<
+    typename Next = DEFAULT_NEXT_TYPE,
+    typename State = DEFAULT_STATE_TYPE
+>
+struct SubscriptOperator : SubscriptOperator_<DEFAULT_ARITY_VALUE, Next, State> {};
+
+/********************************************/
 
 #if ENABLE_ALIAS
     using DEFAULT_NEXT_TYPE = End;
