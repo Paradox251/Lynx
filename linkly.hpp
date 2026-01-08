@@ -313,6 +313,7 @@ struct SubscriptOperator_ :
     friend SubscriptOperatorBase<SubscriptOperator_<Arity, Next, CurrentState>>;
 
 private:
+#if __cplusplus >= 202302L
     template<typename... Args>
     auto onOperated(Args&&... args) noexcept(false) {
         auto concat_state_args = std::tuple_cat(
@@ -333,6 +334,7 @@ private:
                 decltype(concat_state_args)
             > (std::move(concat_state_args));
     }
+#endif
 
 private:
     template<typename T>
