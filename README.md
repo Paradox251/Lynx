@@ -155,40 +155,50 @@ struct FunctionOperatorBase<DerivedOperator<Arity, Next, State>> {
 using namespace linkly;
 
 template<
-    std::size_t Arity,
-    typename Next,
-    typename CurrentState
+    std::size_t Arity, // Number of arguments required
+    typename Next, // Represents the subsequent structure type
+    typename CurrentState // Type of the stored state
 >
-struct FunctionOperator_ :
-    OperatorTraits<FunctionOperator_<Arity, Next, CurrentState>>,
-    FunctionOperatorBase<FunctionOperator_<Arity, Next, CurrentState>>,
-    StatefulOperator<CurrentState>
+struct EntityIndexerOperator_:
+    OperatorTraits<EntityIndexerOperator_<Arity, Next, CurrentState>>, // Allows for type introspection 
+    SubscriptOperatorBase<EntityIndexerOperator_<Arity, Next, CurrentState>>, // Crtp base for generic operator attributes
+    StatefulOperator<CurrentState> // Allows support for State by providing constructor, storage, etc...
 {
-    using StatefulOperator<CurrentState>::StatefulOperator;
-    friend FunctionOperatorBase<FunctionOperator_<Arity, Next, CurrentState>>;
+    using StatefulOperator<CurrentState>::StatefulOperator; // Using the base's constructor
+    friend SubscriptOperatorBase<EntityIndexerOperator_<Arity, Next, CurrentState>>; // Allows private implementation for onOperated
 
 private:
     template<typename... Args>
-    auto onOperated(Args&&... args) noexcept(false) {
+    auto onOperated(Args&&... args) { // hooked function called when the base operator is called.
+
+        // Adding the arguments to the current state using std::tuple_cat()
         auto concat_state_args = std::tuple_cat(
             this->state_,
             std::make_tuple(std::make_tuple(std::forward<Args>(args)...))
         );
 
+        // Checks if the next node is normal or terminal
         if constexpr (is_end_operator<Next>::value) {
-            if constexpr (has_onOperated_dummy<Next>::value)
-                return Next{ concat_state_args };
+            if constexpr (has_onOperated_dummy<Next>::value) // Checks if terminal implements onOperated()
+                return Next{ concat_state_args }; // If so, returns the terminal node with the current state 
             else
-                return concat_state_args;
+                return concat_state_args; // Otherwise, returns directly the state as it's raw type (tuple in this case) 
         }
         else
             return Next::template template_type<
-                Next::arity,
-                typename Next::next_type,
-                decltype(concat_state_args)
-            > (std::move(concat_state_args));
+                sizeof...(args), // Limits the next node to accepting the same number of arguments
+                                 // In this case, we want the number of components to be equal to the number of entities
+
+                typename Next::next_type, // Uses the same typename Next as normal, no change here
+
+
+                decltype(concat_state_args) // Resolves the type of the current state and sends it
+                                            // This allows the next node to store the tuple as a member
+
+            > (std::move(concat_state_args)); // std::move the current state and passes it to the next node via its constructor
     }
 };
+
 ```
 
 ---
