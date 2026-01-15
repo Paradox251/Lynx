@@ -230,6 +230,7 @@ Planned features and improvements for future releases:
 * [ ] Improve compile-time diagnostics and error messages
 * [ ] Extend examples and documentation
 * [ ] Fix SFINAE to support C++17 and prior
+* [ ] Change the name for Lynx
 
 > This roadmap may evolve as the library grows.
 
