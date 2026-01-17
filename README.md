@@ -1,7 +1,12 @@
-# Linkly
+# EXOTIC.lynx
 
-> Linkly is a C++ compile-time meta programming library for building composable operator pipelines.  
-> This library is intended for developers wishing to create their own DSL using ultra-high-performance, fully compile-time and type-safe operator pipelines.
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)](#)
+[![License](https://img.shields.io/badge/license-BSL%201.0-blue)](#)
+[![C++ Version](https://img.shields.io/badge/C%2B%2B-17-blue)](#)
+[![Release](https://img.shields.io/badge/release-1.0.0-blueviolet)](#)
+
+Linkly is a C++ compile-time meta programming library for building composable operator pipelines.  
+This library is intended for developers wishing to create their own DSL using ultra-high-performance, fully compile-time and type-safe operator pipelines.
 
 ---
 
