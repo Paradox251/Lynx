@@ -46,7 +46,7 @@ Instructions on how to install, include, or build the library.
 
 ### Requirements
 - **C++ Standard:** C++17 or later  
-- **Compilers:** GCC 9+, Clang 10+, MSVC 2019+ (any compiler supporting C++11 to C++26)
+- **Compilers:** GCC 9+, Clang 10+, MSVC 2019+ (any compiler supporting C++17 to C++26)
 
 - **Dependencies:** Only the C++ standard library (`<tuple>`, `<type_traits>`, `<concepts>`, `<utility>`, `<iostream>`). No external dependencies.
 
