@@ -3,7 +3,7 @@
 [![Build](https://img.shields.io/badge/build-passing-brightgreen)](#)
 [![License](https://img.shields.io/badge/license-BSL%201.0-blue)](#)
 [![C++ Version](https://img.shields.io/badge/C%2B%2B-17-blue)](#)
-[![Release](https://img.shields.io/badge/release-1.0.0-blueviolet)](#)
+[![Release](https://img.shields.io/badge/release-1.1.0-blueviolet)](#)
 
 Lynx is a C++ compile-time metaprogramming library for building composable operator pipelines.
 Part of the EXOTIC collection, it is intended for developers who want to build DSLs using type-safe, compile-time operator composition.
